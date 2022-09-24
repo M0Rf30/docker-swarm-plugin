@@ -19,7 +19,6 @@ import hudson.model.Executor;
 import hudson.model.ExecutorListener;
 import hudson.model.Queue;
 import hudson.slaves.RetentionStrategy;
-import jenkins.model.Jenkins;
 
 public class DockerSwarmAgentRetentionStrategy extends RetentionStrategy<DockerSwarmComputer>
         implements ExecutorListener {
@@ -44,8 +43,9 @@ public class DockerSwarmAgentRetentionStrategy extends RetentionStrategy<DockerS
     public long check(@Nonnull DockerSwarmComputer c) {
         if (c.isIdle() && c.isOnline()) {
             final long connectTime = System.currentTimeMillis() - c.getConnectTime();
+            final long onlineTime = System.currentTimeMillis() - c.getOnlineTime();
             final long idleTime = System.currentTimeMillis() - c.getIdleStartMilliseconds();
-            final boolean isTimeout = connectTime > timeout && idleTime > timeout;
+            final boolean isTimeout = connectTime > timeout && onlineTime > timeout && idleTime > timeout;
             if (isTimeout && (!isTaskAccepted || isTaskCompleted ) && !Jenkins.getInstance().isQuietingDown()) {
                 LOGGER.log(Level.INFO, "Disconnecting due to idle {0}", c.getName());
                 done(c);
