@@ -46,7 +46,7 @@ public class DockerSwarmAgentRetentionStrategy extends RetentionStrategy<DockerS
             final long onlineTime = System.currentTimeMillis() - c.getOnlineTime();
             final long idleTime = System.currentTimeMillis() - c.getIdleStartMilliseconds();
             final boolean isTimeout = connectTime > timeout && onlineTime > timeout && idleTime > timeout;
-            if (isTimeout && (!isTaskAccepted || isTaskCompleted ) && !Jenkins.getInstance().isQuietingDown()) {
+            if (isTimeout && (!isTaskAccepted || isTaskCompleted)) {
                 LOGGER.log(Level.INFO, "Disconnecting due to idle {0}", c.getName());
                 done(c);
             }
