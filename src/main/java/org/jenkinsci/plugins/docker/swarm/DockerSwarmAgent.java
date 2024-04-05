@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.jenkinsci.plugins.docker.swarm.docker.api.service.DeleteServiceRequest;
 
 import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
 import hudson.model.Descriptor;
 import hudson.model.Queue;
 import hudson.model.TaskListener;
@@ -33,8 +34,9 @@ public class DockerSwarmAgent extends AbstractCloudSlave {
 
     @Override
     protected void _terminate(final TaskListener listener) throws IOException, InterruptedException {
-        DockerSwarmPlugin swarmPlugin = Jenkins.getInstance().getPlugin(DockerSwarmPlugin.class);
-        ActorRef agentLauncherRef = swarmPlugin.getActorSystem().actorFor("/user/" + getComputer().getName());
+        DockerSwarmPlugin swarmPlugin = Jenkins.getInstanceOrNull().getPlugin(DockerSwarmPlugin.class);
+        ActorSelection agentLauncherRef = swarmPlugin.getActorSystem()
+                .actorSelection("/user/" + getComputer().getName());
         agentLauncherRef.tell(new DeleteServiceRequest(getComputer().getName()), ActorRef.noSender());
     }
 

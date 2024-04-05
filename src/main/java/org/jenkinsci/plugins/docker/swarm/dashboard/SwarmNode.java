@@ -59,18 +59,18 @@ public class SwarmNode {
     }
 
     public Object[] getCurrentBuilds() {
-        final Jenkins jenkins = Jenkins.getInstance();
+        final Jenkins jenkins = Jenkins.getInstanceOrNull();
         return getTasksWithRuns(jenkins).map(task -> getComputer(jenkins, task).getCurrentBuild()).toArray();
     }
 
     public Task[] getUnknownRunningTasks() {
-        final Jenkins jenkins = Jenkins.getInstance();
+        final Jenkins jenkins = Jenkins.getInstanceOrNull();
         return this.tasks.stream().filter(task -> getComputer(jenkins, task) == null && task.Status.isRunning())
                 .toArray(Task[]::new);
     }
 
     public Map<Task, Run> getTaskRunMap() {
-        final Jenkins jenkins = Jenkins.getInstance();
+        final Jenkins jenkins = Jenkins.getInstanceOrNull();
         Map<Task, Run> map = new HashMap<>();
         getTasksWithRuns(jenkins).forEach(task -> map.put(task, (Run) getComputer(jenkins, task).getCurrentBuild()));
         return map;

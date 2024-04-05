@@ -9,7 +9,7 @@
     </parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>docker-swarm</artifactId>
-    <version>1.12-SNAPSHOT</version>
+    <version>1.17-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>Docker Swarm Plugin</name>
@@ -22,14 +22,14 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-        <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-        <tag>HEAD</tag>
+        <connection>scm:git:git://github.com/M0Rf30/${project.artifactId}-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:M0Rf30/${project.artifactId}-plugin.git</developerConnection>
+        <url>https://github.com/M0rf30/${project.artifactId}-plugin</url>
+        <tag>docker-swarm-1.17</tag>
     </scm>
     <properties>
         <jenkins.version>2.222.4</jenkins.version>
-        <java.level>8</java.level>
+        <java.level>11</java.level>
         <jackson-jaxrs.version>2.6.4</jackson-jaxrs.version>
         <spotbugs.skip>true</spotbugs.skip>
     </properties>
@@ -51,8 +51,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
