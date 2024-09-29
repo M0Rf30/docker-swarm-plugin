@@ -34,11 +34,12 @@ public class DeadAgentServiceReaperActor extends AbstractActor {
 
     private void reapDeadAgentServices() throws IOException {
         try {
-            final DockerSwarmPlugin swarmPlugin = Jenkins.getInstance().getPlugin(DockerSwarmPlugin.class);
+            final DockerSwarmPlugin swarmPlugin = Jenkins.get().getPlugin(DockerSwarmPlugin.class);
             final ActorSystem as = swarmPlugin.getActorSystem();
             if (DockerSwarmCloud.get() != null) {
                 String dockerSwarmApiUrl = DockerSwarmCloud.get().getDockerSwarmApiUrl();
-                final Object result = new ListServicesRequest(dockerSwarmApiUrl, "label", "ROLE=jenkins-agent").execute();
+                final Object result = new ListServicesRequest(dockerSwarmApiUrl, "label", "ROLE=jenkins-agent")
+                        .execute();
                 for (ScheduledService service : (List<ScheduledService>) getResult(result, List.class)) {
                     Object tasks = new ListTasksRequest(dockerSwarmApiUrl, "service", service.Spec.Name).execute();
                     if (tasks != null) {

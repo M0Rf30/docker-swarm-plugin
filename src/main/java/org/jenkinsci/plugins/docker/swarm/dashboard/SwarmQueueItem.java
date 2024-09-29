@@ -29,7 +29,7 @@ public class SwarmQueueItem {
                 .getAction(DockerSwarmLabelAssignmentAction.class);
         if (lblAssignmentAction != null) {
             final String computerName = lblAssignmentAction.getLabel().getName();
-            this.provisionedComputer = Jenkins.getInstance().getComputer(computerName);
+            this.provisionedComputer = Jenkins.get().getComputer(computerName);
         }
     }
 

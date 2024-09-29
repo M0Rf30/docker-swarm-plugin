@@ -89,33 +89,36 @@ public class DockerSwarmComputerLauncher extends JNLPLauncher {
 
         if (dockerSwarmAgentTemplate.isOsWindows()) {
             String command = dockerSwarmAgentTemplate.getWindowsCommand();
-            HashMap<String,String> envHashMap = new HashMap<String,String>(){{
-                // TODO derive automatically from above list
-                put("\\%DOCKER_SWARM_PLUGIN_JENKINS_AGENT_SECRET\\%",getAgentSecret(computer));
-                put("\\%DOCKER_SWARM_PLUGIN_JENKINS_URL\\%",getJenkinsUrl(configuration));
-                put("\\%DOCKER_SWARM_PLUGIN_JENKINS_AGENT_JAR_URL\\%",getAgentJarUrl(configuration));
-                put("\\%DOCKER_SWARM_PLUGIN_JENKINS_AGENT_JNLP_URL\\%",getAgentJnlpUrl(computer, configuration));
-                put("\\%DOCKER_SWARM_PLUGIN_JENKINS_AGENT_NAME\\%",getAgentName(computer));
-                
-            }};
-            for (String envVarString: envHashMap.keySet()){
-                System.out.println("Replacing: "+ envVarString + " with: "+envHashMap.get(envVarString));
+            HashMap<String, String> envHashMap = new HashMap<String, String>() {
+                {
+                    // TODO derive automatically from above list
+                    put("\\%DOCKER_SWARM_PLUGIN_JENKINS_AGENT_SECRET\\%", getAgentSecret(computer));
+                    put("\\%DOCKER_SWARM_PLUGIN_JENKINS_URL\\%", getJenkinsUrl(configuration));
+                    put("\\%DOCKER_SWARM_PLUGIN_JENKINS_AGENT_JAR_URL\\%", getAgentJarUrl(configuration));
+                    put("\\%DOCKER_SWARM_PLUGIN_JENKINS_AGENT_JNLP_URL\\%", getAgentJnlpUrl(computer, configuration));
+                    put("\\%DOCKER_SWARM_PLUGIN_JENKINS_AGENT_NAME\\%", getAgentName(computer));
+
+                }
+            };
+            for (String envVarString : envHashMap.keySet()) {
+                System.out.println("Replacing: " + envVarString + " with: " + envHashMap.get(envVarString));
                 command = command.replaceAll(envVarString, envHashMap.get(envVarString));
-                System.out.println("Command: "+ command);
+                System.out.println("Command: " + command);
             }
             ArrayList<String> finalCommand = new ArrayList<String>();
-                String [] windowsCommand = dockerSwarmAgentTemplate.getWindowsCommandConfig(command);
-                for (String windowsCommandSegment: windowsCommand){
-                    if(windowsCommandSegment.equals("${unixCommand}")){
-                        for(String unixCommandSegment: dockerSwarmAgentTemplate.getUnixCommandConfig()){
-                            finalCommand.add(unixCommandSegment);
-                        }
-                    } else{
-                        finalCommand.add(windowsCommandSegment);
+            String[] windowsCommand = dockerSwarmAgentTemplate.getWindowsCommandConfig(command);
+            for (String windowsCommandSegment : windowsCommand) {
+                if (windowsCommandSegment.equals("${unixCommand}")) {
+                    for (String unixCommandSegment : dockerSwarmAgentTemplate.getUnixCommandConfig()) {
+                        finalCommand.add(unixCommandSegment);
                     }
+                } else {
+                    finalCommand.add(windowsCommandSegment);
                 }
-            
-            launchContainer(finalCommand.toArray(new String[0]), configuration, envVars, dockerSwarmAgentTemplate.getWorkingDir(),
+            }
+
+            launchContainer(finalCommand.toArray(new String[0]), configuration, envVars,
+                    dockerSwarmAgentTemplate.getWorkingDir(),
                     dockerSwarmAgentTemplate.getUser(), dockerSwarmAgentTemplate, listener, computer,
                     dockerSwarmAgentTemplate.getHostsConfig());
         } else {
@@ -140,7 +143,7 @@ public class DockerSwarmComputerLauncher extends JNLPLauncher {
     public void launchContainer(String[] commands, DockerSwarmCloud configuration, String[] envVars, String dir,
             String user, DockerSwarmAgentTemplate dockerSwarmAgentTemplate, TaskListener listener,
             DockerSwarmComputer computer, String[] hosts) throws IOException {
-        DockerSwarmPlugin swarmPlugin = Jenkins.getInstance().getPlugin(DockerSwarmPlugin.class);
+        DockerSwarmPlugin swarmPlugin = Jenkins.get().getPlugin(DockerSwarmPlugin.class);
         ServiceSpec crReq = createCreateServiceRequest(commands, configuration, envVars, dir, user,
                 dockerSwarmAgentTemplate, computer, hosts);
 
@@ -177,8 +180,9 @@ public class DockerSwarmComputerLauncher extends JNLPLauncher {
     }
 
     private void setPlacement(DockerSwarmAgentTemplate dockerSwarmAgentTemplate, ServiceSpec crReq) {
-        crReq.TaskTemplate.setPlacement(dockerSwarmAgentTemplate.getPlacementConstraintsConfig(), 
-            dockerSwarmAgentTemplate.getPlacementArchitecture(), dockerSwarmAgentTemplate.getPlacementOperatingSystem());
+        crReq.TaskTemplate.setPlacement(dockerSwarmAgentTemplate.getPlacementConstraintsConfig(),
+                dockerSwarmAgentTemplate.getPlacementArchitecture(),
+                dockerSwarmAgentTemplate.getPlacementOperatingSystem());
     }
 
     private ServiceSpec createCreateServiceRequest(String[] commands, DockerSwarmCloud configuration, String[] envVars,
@@ -217,12 +221,14 @@ public class DockerSwarmComputerLauncher extends JNLPLauncher {
         for (int i = 0; i < hostBinds.length; i++) {
             String hostBind = hostBinds[i];
             String[] srcDest = hostBind.split(":");
-            //on Windows machines with windows containers, you will likely have paths including the drive name,
-            //e.g. "D:\host\dir:C:\container\dir" has 3 ":" - and should evaluate as addBindVolume("D:\host\dir","C:\container\dir")
-            if (srcDest.length == 4){
-                crReq.addBindVolume(srcDest[0]+":"+srcDest[1],srcDest[2]+":"+srcDest[3]);
+            // on Windows machines with windows containers, you will likely have paths
+            // including the drive name,
+            // e.g. "D:\host\dir:C:\container\dir" has 3 ":" - and should evaluate as
+            // addBindVolume("D:\host\dir","C:\container\dir")
+            if (srcDest.length == 4) {
+                crReq.addBindVolume(srcDest[0] + ":" + srcDest[1], srcDest[2] + ":" + srcDest[3]);
             } else {
-                crReq.addBindVolume(srcDest[0],srcDest[1]);
+                crReq.addBindVolume(srcDest[0], srcDest[1]);
             }
         }
     }
@@ -330,7 +336,7 @@ public class DockerSwarmComputerLauncher extends JNLPLauncher {
 
     private void setMetadata(DockerSwarmAgentTemplate dockerSwarmAgentTemplate, ServiceSpec crReq) {
         String[] metadata = dockerSwarmAgentTemplate.getMetadataConfig();
-        for(String mt : metadata) {
+        for (String mt : metadata) {
             if (!mt.contains("=")) {
                 continue;
             }

@@ -33,7 +33,7 @@ public class DockerSwarmAgent extends AbstractCloudSlave {
 
     @Override
     protected void _terminate(final TaskListener listener) throws IOException, InterruptedException {
-        DockerSwarmPlugin swarmPlugin = Jenkins.getInstance().getPlugin(DockerSwarmPlugin.class);
+        DockerSwarmPlugin swarmPlugin = Jenkins.get().getPlugin(DockerSwarmPlugin.class);
         ActorRef agentLauncherRef = swarmPlugin.getActorSystem().actorFor("/user/" + getComputer().getName());
         agentLauncherRef.tell(new DeleteServiceRequest(getComputer().getName()), ActorRef.noSender());
     }

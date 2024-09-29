@@ -36,7 +36,7 @@ public class OneShotProvisionQueueListener extends QueueListener {
             if (labelAssignmentAction != null) {
                 final String computerName = labelAssignmentAction.getLabel().getName();
 
-                final Node node = Jenkins.getInstance().getNode(computerName);
+                final Node node = Jenkins.get().getNode(computerName);
                 Computer.threadPoolForRemoting.submit(() -> {
                     try {
                         ((DockerSwarmAgent) node).terminate();

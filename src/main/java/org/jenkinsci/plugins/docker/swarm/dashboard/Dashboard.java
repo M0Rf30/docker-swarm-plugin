@@ -38,7 +38,7 @@ public class Dashboard {
 
     public Iterable<SwarmQueueItem> getQueue() {
         final List<SwarmQueueItem> queue = new ArrayList<>();
-        final Queue.Item[] items = Jenkins.getInstance().getQueue().getItems();
+        final Queue.Item[] items = Jenkins.get().getQueue().getItems();
         for (int i = items.length - 1; i >= 0; i--) { // reverse order
             final Queue.Item item = items[i];
             final DockerSwarmAgentInfo agentInfo = item.getAction(DockerSwarmAgentInfo.class);

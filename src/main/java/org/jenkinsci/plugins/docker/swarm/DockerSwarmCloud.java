@@ -108,7 +108,7 @@ public class DockerSwarmCloud extends Cloud {
 
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup context, @QueryParameter String value) {
             AccessControlled ac = (context instanceof AccessControlled ? (AccessControlled) context
-                    : Jenkins.getInstance());
+                    : Jenkins.get());
             if (!ac.hasPermission(Jenkins.ADMINISTER)) {
                 return new StandardListBoxModel().includeCurrentValue(value);
             }
@@ -157,7 +157,7 @@ public class DockerSwarmCloud extends Cloud {
             return null;
 
         DockerServerCredentials credentials = firstOrNull(lookupCredentials(DockerServerCredentials.class,
-                Jenkins.getInstance(), ACL.SYSTEM, Collections.<DomainRequirement>emptyList()), withId(credentialsId));
+                Jenkins.get(), ACL.SYSTEM, Collections.<DomainRequirement>emptyList()), withId(credentialsId));
         return credentials == null ? null : new DockerServerCredentialsSSLConfig(credentials);
     }
 
@@ -192,7 +192,7 @@ public class DockerSwarmCloud extends Cloud {
     public Long getTimeoutMinutes() {
         return timeoutMinutes;
     }
-    
+
     public List<DockerSwarmAgentTemplate> getAgentTemplates() {
         return agentTemplates;
     }
@@ -214,7 +214,7 @@ public class DockerSwarmCloud extends Cloud {
     }
 
     public static DockerSwarmCloud get() {
-        return (DockerSwarmCloud) Jenkins.getInstance().getCloud(DOCKER_SWARM_CLOUD_NAME);
+        return (DockerSwarmCloud) Jenkins.get().getCloud(DOCKER_SWARM_CLOUD_NAME);
     }
 
     public void save() {
@@ -223,7 +223,7 @@ public class DockerSwarmCloud extends Cloud {
 
     @Initializer(after = InitMilestone.JOB_LOADED)
     public static void initFromYaml() throws IOException {
-        File configsDir = new File(Jenkins.getInstance().getRootDir(), "pluginConfigs");
+        File configsDir = new File(Jenkins.get().getRootDir(), "pluginConfigs");
         File swarmConfigYaml = new File(configsDir, "swarm.yml");
         if (swarmConfigYaml.exists()) {
             LOGGER.info("Configuring swarm plugin from " + swarmConfigYaml.getAbsolutePath());
@@ -232,9 +232,9 @@ public class DockerSwarmCloud extends Cloud {
                 DockerSwarmCloud configuration = mapper.readValue(in, DockerSwarmCloud.class);
                 DockerSwarmCloud existingCloud = DockerSwarmCloud.get();
                 if (existingCloud != null) {
-                    Jenkins.getInstance().clouds.remove(existingCloud);
+                    Jenkins.get().clouds.remove(existingCloud);
                 }
-                Jenkins.getInstance().clouds.add(configuration);
+                Jenkins.get().clouds.add(configuration);
             }
         }
         scheduleReaperActor();
@@ -242,14 +242,14 @@ public class DockerSwarmCloud extends Cloud {
     }
 
     private static void scheduleResetStuckBuildsActor() {
-        DockerSwarmPlugin swarmPlugin = Jenkins.getInstance().getPlugin(DockerSwarmPlugin.class);
+        DockerSwarmPlugin swarmPlugin = Jenkins.get().getPlugin(DockerSwarmPlugin.class);
         final ActorRef resetStuckBuildsActor = swarmPlugin.getActorSystem()
                 .actorOf(ResetStuckBuildsInQueueActor.props(), "reset-stuck-builds-actor");
         resetStuckBuildsActor.tell("start", ActorRef.noSender());
     }
 
     private static void scheduleReaperActor() {
-        DockerSwarmPlugin swarmPlugin = Jenkins.getInstance().getPlugin(DockerSwarmPlugin.class);
+        DockerSwarmPlugin swarmPlugin = Jenkins.get().getPlugin(DockerSwarmPlugin.class);
         final ActorRef deadAgentReaper = swarmPlugin.getActorSystem().actorOf(DeadAgentServiceReaperActor.props(),
                 "dead-agentService-reaper");
         deadAgentReaper.tell("start", ActorRef.noSender());

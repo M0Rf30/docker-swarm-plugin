@@ -27,7 +27,7 @@ public class BuildScheduler {
             final Node node = new DockerSwarmAgent(bi, action.getLabel().toString());
             Computer.threadPoolForRemoting.submit(() -> {
                 try {
-                    Jenkins.getInstance().addNode(node); // locks queue
+                    Jenkins.get().addNode(node); // locks queue
                 } catch (final IOException e) {
                     LOGGER.log(Level.INFO, "couldn't add agent", e);
                 }

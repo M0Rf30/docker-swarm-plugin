@@ -57,13 +57,18 @@ public class DockerSwarmAgentTemplate implements Describable<DockerSwarmAgentTem
     }
 
     @DataBoundConstructor
-    public DockerSwarmAgentTemplate(final String image, final String hostBinds, final String hostNamedPipes, final String dnsIps,
-            final String dnsSearchDomains, final String unixCommand,final String windowsCommand, final String user, final String workingDir,
-            final String hosts, final String metadata, final String secrets, final String configs, final String label, final String cacheDir,
+    public DockerSwarmAgentTemplate(final String image, final String hostBinds, final String hostNamedPipes,
+            final String dnsIps,
+            final String dnsSearchDomains, final String unixCommand, final String windowsCommand, final String user,
+            final String workingDir,
+            final String hosts, final String metadata, final String secrets, final String configs, final String label,
+            final String cacheDir,
             final String tmpfsDir, final String envVars, final long limitsNanoCPUs, final long limitsMemoryBytes,
-            final long reservationsNanoCPUs, final long reservationsMemoryBytes, String portBinds, final boolean osWindows,
+            final long reservationsNanoCPUs, final long reservationsMemoryBytes, String portBinds,
+            final boolean osWindows,
             final String baseWorkspaceLocation, final String placementConstraints, final String placementArchitecture,
-            final String placementOperatingSystem, final String email, final String serverAddress, final String pullCredentialsId) {
+            final String placementOperatingSystem, final String email, final String serverAddress,
+            final String pullCredentialsId) {
         this.image = image;
         this.hostBinds = hostBinds;
         this.hostNamedPipes = hostNamedPipes;
@@ -105,7 +110,7 @@ public class DockerSwarmAgentTemplate implements Describable<DockerSwarmAgentTem
     }
 
     public String[] getLabels() {
-        return StringUtils.isEmpty(this.label) ? new String[]{} : this.label.split("\\s+");
+        return StringUtils.isEmpty(this.label) ? new String[] {} : this.label.split("\\s+");
     }
 
     public String getImage() {
@@ -141,7 +146,7 @@ public class DockerSwarmAgentTemplate implements Describable<DockerSwarmAgentTem
     }
 
     public String[] getPortBindsConfig() {
-        return StringUtils.isEmpty(this.portBinds) ? new String[]{} : this.portBinds.split("[\\r\\n ]+");
+        return StringUtils.isEmpty(this.portBinds) ? new String[] {} : this.portBinds.split("[\\r\\n ]+");
     }
 
     public String[] getEnvVarsConfig() {
@@ -151,6 +156,7 @@ public class DockerSwarmAgentTemplate implements Describable<DockerSwarmAgentTem
     public String[] getUnixCommandConfig() {
         return StringUtils.isEmpty(this.unixCommand) ? new String[] {} : this.unixCommand.split("[\\r\\n]+");
     }
+
     public String[] getWindowsCommandConfig() {
         return StringUtils.isEmpty(this.windowsCommand) ? new String[] {} : this.windowsCommand.split("[\\r\\n\\s]+");
     }
@@ -201,7 +207,7 @@ public class DockerSwarmAgentTemplate implements Describable<DockerSwarmAgentTem
 
     @Override
     public Descriptor<DockerSwarmAgentTemplate> getDescriptor() {
-        return (DescriptorImpl) Jenkins.getInstance().getDescriptor(getClass());
+        return (DescriptorImpl) Jenkins.get().getDescriptor(getClass());
     }
 
     public String getBaseWorkspaceLocation() {
@@ -233,7 +239,7 @@ public class DockerSwarmAgentTemplate implements Describable<DockerSwarmAgentTem
 
         public ListBoxModel doFillPullCredentialsIdItems(@AncestorInPath Item item,
                 @QueryParameter String pullCredentialsId) {
-            if (item == null && !Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)
+            if (item == null && !Jenkins.get().hasPermission(Jenkins.ADMINISTER)
                     || item != null && !item.hasPermission(Item.EXTENDED_READ)) {
                 return new StandardListBoxModel();
             }
@@ -248,7 +254,9 @@ public class DockerSwarmAgentTemplate implements Describable<DockerSwarmAgentTem
         return hostBinds;
     }
 
-    public String getMetadata() { return metadata; }
+    public String getMetadata() {
+        return metadata;
+    }
 
     public String getHostNamedPipes() {
         return hostNamedPipes;
