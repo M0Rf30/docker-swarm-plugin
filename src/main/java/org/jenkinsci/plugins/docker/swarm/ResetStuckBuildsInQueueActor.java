@@ -32,7 +32,7 @@ public class ResetStuckBuildsInQueueActor extends AbstractActor {
     }
 
     private void resetStuckBuildsInQueue() throws IOException, InterruptedException {
-        try (ACLContext context = ACL.as(ACL.SYSTEM)) {
+        try (ACLContext context = ACL.as2(ACL.SYSTEM2)) {
             long resetMinutes = Optional.ofNullable(DockerSwarmCloud.get().getTimeoutMinutes())
                     .orElse(DEFAULT_RESET_MINUTES);
             final Queue.Item[] items = Jenkins.get().getQueue().getItems();

@@ -245,7 +245,7 @@ public class DockerSwarmAgentTemplate implements Describable<DockerSwarmAgentTem
             }
 
             final DockerRegistryEndpoint.DescriptorImpl descriptor = (DockerRegistryEndpoint.DescriptorImpl) Jenkins
-                    .getInstance().getDescriptorOrDie(DockerRegistryEndpoint.class);
+                    .get().getDescriptorOrDie(DockerRegistryEndpoint.class);
             return descriptor.doFillCredentialsIdItems(item);
         }
     }

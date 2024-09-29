@@ -16,6 +16,8 @@ import javax.net.ssl.TrustManagerFactory;
 import com.github.dockerjava.core.SSLConfig;
 import com.github.dockerjava.core.util.CertificateUtils;
 
+import hudson.util.Secret;
+
 import org.jenkinsci.plugins.docker.commons.credentials.DockerServerCredentials;
 
 /**
@@ -33,7 +35,7 @@ public class DockerServerCredentialsSSLConfig implements SSLConfig {
             throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
 
         try {
-            final KeyStore keyStore = CertificateUtils.createKeyStore(credentials.getClientKey(),
+            final KeyStore keyStore = CertificateUtils.createKeyStore(Secret.toString(credentials.getClientKeySecret()),
                     credentials.getClientCertificate());
             final KeyManagerFactory keyManagerFactory = KeyManagerFactory
                     .getInstance(KeyManagerFactory.getDefaultAlgorithm());

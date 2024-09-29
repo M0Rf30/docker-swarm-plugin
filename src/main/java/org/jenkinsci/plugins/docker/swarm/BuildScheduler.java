@@ -18,7 +18,7 @@ public class BuildScheduler {
     private static AtomicInteger counter = new AtomicInteger(1);
 
     public static void scheduleBuild(final Queue.BuildableItem bi) {
-        try (ACLContext context = ACL.as(ACL.SYSTEM)) {
+        try (ACLContext context = ACL.as2(ACL.SYSTEM2)) {
             final DockerSwarmLabelAssignmentAction action = createLabelAssignmentAction(bi.task.getDisplayName());
             DockerSwarmAgentInfo dockerSwarmAgentInfo = new DockerSwarmAgentInfo(true);
             dockerSwarmAgentInfo.setAgentLabel(action.getLabel().toString());
